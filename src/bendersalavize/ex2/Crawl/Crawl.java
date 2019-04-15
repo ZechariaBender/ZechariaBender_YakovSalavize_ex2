@@ -13,15 +13,31 @@ public class Crawl {
             int poolSize = Integer.valueOf(args[0]);
             int delay = Math.abs(Integer.valueOf(args[1]));
             int attempt = Integer.valueOf(args[2]);
-            String url = args[3];
-            ExecutorService pool = Executors.newFixedThreadPool(poolSize);
+            String filename = args[3];
+
+            URLChecker urlChecker = new ImageURLChecker();
+            DatabaseManager dbm = new DatabaseManager();
+            try {
+                BufferedReader urlReader = new BufferedReader(new FileReader(filename));
+                String url;
+                ExecutorService pool = Executors.newFixedThreadPool(poolSize);
+                while((url = urlReader.readLine()) != null) {
+                    pool.execute(new URLAnalyzeInsertTask(url, urlChecker, dbm));
+                }
+                pool.shutdown();
+                urlReader.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
         else {
             try {
                 // display printout from readme
-                BufferedReader readme = null;
-                readme = new BufferedReader
-                        (new FileReader("src/RestrictedView/README"));
+                BufferedReader readme = new BufferedReader
+                        (new FileReader("src/Crawl/README"));
                 String line;
                 while((line = readme.readLine()) != null)
                     System.out.println(line);

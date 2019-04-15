@@ -5,7 +5,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-public class ImageUrlChecker implements UrlChecker {
+public class ImageURLChecker implements URLChecker {
     @Override
     public boolean accept(String url) {
         try {
