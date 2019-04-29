@@ -6,13 +6,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class Crawl {
     public static void main(String[] args) {
         if (args.length == 4) {
             int poolSize = Integer.valueOf(args[0]);
             int delay = Math.abs(Integer.valueOf(args[1]));
-            int attempt = Integer.valueOf(args[2]);
+            int attempts = Integer.valueOf(args[2]);
             String filename = args[3];
 
             URLChecker urlChecker = new ImageURLChecker();
@@ -22,13 +23,19 @@ public class Crawl {
                 String url;
                 ExecutorService pool = Executors.newFixedThreadPool(poolSize);
                 while((url = urlReader.readLine()) != null) {
-                    pool.execute(new URLAnalyzeInsertTask(url, urlChecker, dbm));
+                    pool.execute(new URLAnalyzeInsertTask(url, urlChecker, delay, attempts, dbm));
                 }
                 pool.shutdown();
+                pool.awaitTermination(1, TimeUnit.HOURS);
+                for (int i = 0; i < URLAnalyzeInsertTask.performanceLog.get().size(); i++) {
+                    System.out.println(URLAnalyzeInsertTask.performanceLog.get().get(i));
+                }
                 urlReader.close();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
 

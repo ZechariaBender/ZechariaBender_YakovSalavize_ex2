@@ -48,7 +48,7 @@ public class DatabaseManager {
 
             // Get a statement object from the connection
             // this object will allow us to run queries
-            Statement statement = connect.createStatement();
+            statement = connect.createStatement();
 
 
             // Droping a the table books if it is exists so that later we
