@@ -9,12 +9,8 @@ public class DatabaseManager {
 
     private Statement statement;
     public DatabaseManager() {
-        this.statement = null;
+        initDB();
     }
-    public DatabaseManager(Statement statement) {
-        this.statement = statement;
-    }
-
 
     public boolean insert(String url) {
         try {
