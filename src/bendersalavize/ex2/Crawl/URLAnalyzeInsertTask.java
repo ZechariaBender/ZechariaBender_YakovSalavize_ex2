@@ -1,9 +1,5 @@
 package bendersalavize.ex2.Crawl;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 public class URLAnalyzeInsertTask implements Runnable {
 
     private String url;
@@ -18,7 +14,15 @@ public class URLAnalyzeInsertTask implements Runnable {
 
     @Override
     public void run() {
+        double startTime=System.nanoTime();
+//        try {
+//            Thread.sleep(3000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         if(urlChecker.accept(url))
-                dbm.insert(url);
+            dbm.insert(url);
+        double elapsedTimeSoFar = System.nanoTime()-startTime;
+        System.out.println(elapsedTimeSoFar / 1000000);
     }
 }
