@@ -37,7 +37,7 @@ public class Crawl {
             try {
                 // display printout from readme
                 BufferedReader readme = new BufferedReader
-                        (new FileReader("src/Crawl/README"));
+                        (new FileReader("src/bendersalavize/ex2/Crawl/README"));
                 String line;
                 while((line = readme.readLine()) != null)
                     System.out.println(line);
