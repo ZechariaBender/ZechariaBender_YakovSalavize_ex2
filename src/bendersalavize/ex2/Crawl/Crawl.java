@@ -22,13 +22,13 @@ public class Crawl {
                 BufferedReader urlReader = new BufferedReader(new FileReader(filename));
                 String url;
                 ExecutorService pool = Executors.newFixedThreadPool(poolSize);
-                while((url = urlReader.readLine()) != null) {
+                while((url = urlReader.readLine()) != null)
                     pool.execute(new URLAnalyzeInsertTask(url, urlChecker, delay, attempts, dbm));
-                }
                 pool.shutdown();
                 pool.awaitTermination(1, TimeUnit.HOURS);
-                for (int i = 0; i < URLAnalyzeInsertTask.performanceLog.get().size(); i++) {
-                    System.out.println(URLAnalyzeInsertTask.performanceLog.get().get(i));
+                URLAnalyzeInsertTask.getPerformanceLog().add("fddgr");
+                for (int i = 0; i < URLAnalyzeInsertTask.getPerformanceLog().size(); i++) {
+                    System.out.println(URLAnalyzeInsertTask.getPerformanceLog().get(i));
                 }
                 urlReader.close();
             } catch (FileNotFoundException e) {

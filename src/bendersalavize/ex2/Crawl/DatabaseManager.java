@@ -27,7 +27,7 @@ public class DatabaseManager {
             // Load the Oracle driver
             // Java can dymamically load classes - here we load the external library jdbc-sql-connector
             // String odbcDriver = "sun.jdbc.odbc.JdbcOdbcDriver";
-            String odbcDriver = "com.mysql.jdbc.Driver";
+            String odbcDriver = "com.mysql.cj.jdbc.Driver";
             Class.forName(odbcDriver);
 
         }catch (Exception e) {
