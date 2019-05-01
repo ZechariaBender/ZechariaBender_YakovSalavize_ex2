@@ -12,11 +12,14 @@ public class URLAnalyzeInsertTask implements Runnable {
     private int delay;
     private int attempts;
     private AtomicReference<DatabaseManager> dbm;
+    // performanceLog logs all tasks in order of dispatch
+    // and is therefore necessarily shared by all tasks
     private static ArrayList<String> performanceLog;
 
     URLAnalyzeInsertTask(String url, URLChecker urlChecker, int delay, int attempts, AtomicReference<DatabaseManager> dbm) {
         if (performanceLog == null)
             performanceLog = new ArrayList<>();
+        // index necessary to output performance in same order as url text file
         index = performanceLog.size();
         performanceLog.add(null);
         this.url = url;
@@ -28,8 +31,10 @@ public class URLAnalyzeInsertTask implements Runnable {
 
     @Override
     public void run() {
-        double startTime = System.nanoTime();
+        double startTime = System.nanoTime(); // record start time for performance
         int i;
+        // loop will run only once unless there is a connection issue
+        // (i.e. any IOException besides MalformedURLException)
         for (i = 0; i < attempts; i++) {
             try {
                 if (urlChecker.accept(url)) {
@@ -46,9 +51,11 @@ public class URLAnalyzeInsertTask implements Runnable {
                 }
                 continue;
             }
+            // record performance in appropriate index of performanceLog array
             performanceLog.set(index, displayUrl() + (System.nanoTime() - startTime) / 1000000 + " ms");
             break;
         }
+        // if there was a persistent connection issue
         if (i == attempts) {
             performanceLog.set(index, displayUrl() + "timeout");
         }
@@ -58,6 +65,7 @@ public class URLAnalyzeInsertTask implements Runnable {
         return new ArrayList<>(performanceLog);
     }
 
+    // displayUrl() shortens long urls for readability
     private String displayUrl() {
         int maxLength = 50;
         if (url.length() > maxLength)
