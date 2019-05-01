@@ -14,7 +14,9 @@ public class DatabaseManager {
 
     public void insert(String url) {
         try {
-                statement.execute("insert into images VALUES(default, default, url)");
+            System.out.println("Made a connection ");
+
+            statement.execute("insert into images VALUES(default, default, url)");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -58,5 +60,7 @@ public class DatabaseManager {
             System.out.println("Exception was thrown:\n");
             e.printStackTrace();
         }
+
     }
+
 }

@@ -35,7 +35,7 @@ public class URLAnalyzeInsertTask implements Runnable {
             for (i = 0; i < attempts; i++) {
                 try{
                     if(urlChecker.accept(url)) {
-//                        dbm.insert(url);
+                        dbm.insert(url);
                         performanceLog.set(index, displayUrl() + (System.nanoTime() - startTime) / 1000000 + " ms");
                         break;
                     }
