@@ -16,15 +16,18 @@ public class Crawl {
             int delay = Math.abs(Integer.valueOf(args[1]));
             int attempts = Integer.valueOf(args[2]);
             String filename = args[3];
+            // get instance of ImageURLChecker from urlCheckerFactory
             URLChecker urlChecker = urlCheckerFactory.getChecker("image");
             DatabaseManager dbm = new DatabaseManager("jdbc:mysql://localhost:3306/ex2?user=root&password=&serverTimezone=UTC");
             try {
                 BufferedReader urlReader = new BufferedReader(new FileReader(filename));
                 String url;
                 ExecutorService pool = Executors.newFixedThreadPool(poolSize);
+                // run each url task on separate thread
                 while ((url = urlReader.readLine()) != null)
                     pool.execute(new URLAnalyzeInsertTask(url, urlChecker, delay, attempts, dbm));
                 pool.shutdown();
+                // wait for all threads to finish, and then output performance log
                 pool.awaitTermination(1, TimeUnit.HOURS);
                 for (int i = 0; i < URLAnalyzeInsertTask.getPerformanceLog().size(); i++) {
                     System.out.println(URLAnalyzeInsertTask.getPerformanceLog().get(i));
@@ -73,6 +76,7 @@ public class Crawl {
                     "    A programmer can arbitrarily add alternative URLCheckers with\n" +
                     "    other content types.\n" +
                     "    The current available implementations of URLChecker are:");
+            // print documentation for all available URLChecker implementations
             urlCheckerFactory.printAll();
         }
     }
