@@ -5,11 +5,9 @@ import java.sql.*;
 
 public class DatabaseManager {
 
-
-
     private Statement statement;
-    public DatabaseManager() {
-        initDB();
+    public DatabaseManager(String url) {
+        initDB(url);
     }
 
     public void insert(String url) {
@@ -20,18 +18,16 @@ public class DatabaseManager {
         }
     }
 
-    public void initDB()
+    public void initDB(String url)
     {
         try {
             String odbcDriver = "com.mysql.cj.jdbc.Driver";
             Class.forName(odbcDriver);
 
         }catch (Exception e) {
-            System.out.println("Failed to load the driver");
+            System.err.println("Failed to load the driver");
             return;
         }
-
-        String url = "jdbc:mysql://localhost:3306/ex2?user=root&password=&serverTimezone=UTC";
 
         // The connection object to the database
         // will be used to perform queries
