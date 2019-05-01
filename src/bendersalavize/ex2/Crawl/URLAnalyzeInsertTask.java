@@ -3,6 +3,7 @@ package bendersalavize.ex2.Crawl;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class URLAnalyzeInsertTask implements Runnable {
     private int index;
@@ -10,10 +11,10 @@ public class URLAnalyzeInsertTask implements Runnable {
     private URLChecker urlChecker;
     private int delay;
     private int attempts;
-    private DatabaseManager dbm;
+    private AtomicReference<DatabaseManager> dbm;
     private static ArrayList<String> performanceLog;
 
-    URLAnalyzeInsertTask(String url, URLChecker urlChecker, int delay, int attempts, DatabaseManager dbm) {
+    URLAnalyzeInsertTask(String url, URLChecker urlChecker, int delay, int attempts, AtomicReference<DatabaseManager> dbm) {
         if (performanceLog == null)
             performanceLog = new ArrayList<>();
         index = performanceLog.size();
@@ -32,7 +33,7 @@ public class URLAnalyzeInsertTask implements Runnable {
         for (i = 0; i < attempts; i++) {
             try {
                 if (urlChecker.accept(url)) {
-//                        dbm.insert(url);
+                        dbm.insert(url);
                 }
             } catch (MalformedURLException e) {
                 performanceLog.set(index, displayUrl() + "failed");
