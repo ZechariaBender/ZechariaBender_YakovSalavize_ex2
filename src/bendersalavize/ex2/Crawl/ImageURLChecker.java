@@ -14,12 +14,12 @@ public class ImageURLChecker implements URLChecker {
         return contentType.contains("image");
     }
 
-    public static void print() {
+    static void print() {
         System.out.println("\tImageURLChecker: checks if content type of URL is image");
     }
 
     // getKeyword() method used by URLCheckerFactory
-    public static String getKeyword() {
+    static String getKeyword() {
         return "image";
     }
 

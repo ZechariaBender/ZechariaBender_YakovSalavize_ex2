@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -22,6 +23,7 @@ public class Crawl {
             try {
                 BufferedReader urlReader = new BufferedReader(new FileReader(filename));
                 String url;
+                dbm.initDB();
                 ExecutorService pool = Executors.newFixedThreadPool(poolSize);
                 // run each url task on separate thread
                 while ((url = urlReader.readLine()) != null)
@@ -33,10 +35,14 @@ public class Crawl {
                     System.out.println(URLAnalyzeInsertTask.getPerformanceLog().get(i));
                 }
                 urlReader.close();
+                dbm.printDB();
             } catch (FileNotFoundException e) {
                 System.err.println("file \"" + filename + "\" not found");
             } catch (IOException | InterruptedException e) {
                 e.printStackTrace();
+            }
+            finally {
+                dbm.closeDB();
             }
         }
         else {

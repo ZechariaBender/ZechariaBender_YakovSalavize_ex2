@@ -1,26 +1,30 @@
 package bendersalavize.ex2.Crawl;
 
 import java.sql.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 
-public class DatabaseManager {
-
-    private Statement statement;
-    public DatabaseManager(String url) {
-        initDB(url);
+class DatabaseManager {
+    private String url;
+    private AtomicReference<Statement> statement = new AtomicReference<>();
+    private Connection connect = null;
+    DatabaseManager(String url) {
+        this.url = url;
     }
 
-    public void insert(String url) {
+    void insert(String url) {
         try {
-            System.out.println("Made a connection ");
-
-            statement.execute("insert into images VALUES(default, default, url)");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+//            Thread.sleep(1000);
+            statement.get().executeQuery(("SELECT url FROM images WHERE url = '"+ url +"'"));
+            ResultSet result = statement.get().getResultSet();
+            if(!result.next()) {
+                statement.get().execute("insert into images VALUES(default, default, '" + url + "')");
+                System.out.println("inserted into DB");
+            }
+        } catch (SQLException ignored) {}
     }
 
-    public void initDB(String url)
+    void initDB()
     {
         try {
             String odbcDriver = "com.mysql.cj.jdbc.Driver";
@@ -33,7 +37,6 @@ public class DatabaseManager {
 
         // The connection object to the database
         // will be used to perform queries
-        Connection connect = null;
         try {
             // Create the connection to the database
             connect = DriverManager.getConnection(url);
@@ -42,7 +45,7 @@ public class DatabaseManager {
 
             // Get a statement object from the connection
             // this object will allow us to run queries
-            statement = connect.createStatement();
+            statement.set(connect.createStatement());
 
 
             // Droping a the table books if it is exists so that later we
@@ -56,7 +59,29 @@ public class DatabaseManager {
             System.out.println("Exception was thrown:\n");
             e.printStackTrace();
         }
+    }
+    void closeDB() {
+            try {
+                if (connect != null) { connect.close(); }
+            } catch (SQLException e) {
+                // debugging info
+                e.printStackTrace();
+            }
+    }
 
+    void printDB()
+    {
+        try {
+            ResultSet result = statement.get().executeQuery("SELECT * FROM images ");
+            //	     ResultSet result = statement.executeQuery  ("SELECT MAX(price) AS title FROM books");
+
+            while (result.next()) {
+                System.out.println(result.getString(1) + ") " + result.getString(2) + " " + result.getString(3));
+
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
