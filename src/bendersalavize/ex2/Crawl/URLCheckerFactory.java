@@ -10,10 +10,4 @@ class URLCheckerFactory {
         }
         return null;
     }
-
-    // printAll() prints documentation for all available URLChecker implementations
-    void printAll() {
-        // incidentally there is only one available implementation
-        ImageURLChecker.print();
-    }
 }

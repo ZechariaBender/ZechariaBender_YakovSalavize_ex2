@@ -14,10 +14,6 @@ public class ImageURLChecker implements URLChecker {
         return contentType.contains("image");
     }
 
-    static void print() {
-        System.out.println("\tImageURLChecker: checks if content type of URL is image");
-    }
-
     // getKeyword() method used by URLCheckerFactory
     static String getKeyword() {
         return "image";

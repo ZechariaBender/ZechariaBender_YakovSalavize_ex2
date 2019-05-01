@@ -3,7 +3,6 @@ package bendersalavize.ex2.Crawl;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class URLAnalyzeInsertTask implements Runnable {
     private int index;
@@ -11,12 +10,12 @@ public class URLAnalyzeInsertTask implements Runnable {
     private URLChecker urlChecker;
     private int delay;
     private int attempts;
-    private AtomicReference<DatabaseManager> dbm;
+    private final DatabaseManager dbm;
     // performanceLog logs all tasks in order of dispatch
     // and is therefore necessarily shared by all tasks
     private static ArrayList<String> performanceLog;
 
-    URLAnalyzeInsertTask(String url, URLChecker urlChecker, int delay, int attempts, AtomicReference<DatabaseManager> dbm) {
+    URLAnalyzeInsertTask(String url, URLChecker urlChecker, int delay, int attempts, DatabaseManager dbm) {
         if (performanceLog == null)
             performanceLog = new ArrayList<>();
         // index necessary to output performance in same order as url text file
@@ -38,7 +37,11 @@ public class URLAnalyzeInsertTask implements Runnable {
         for (i = 0; i < attempts; i++) {
             try {
                 if (urlChecker.accept(url)) {
+                    // to avoid race conditions only one
+                    // thread can access dbm at a time
+                    synchronized (dbm) {
                         dbm.insert(url);
+                    }
                 }
             } catch (MalformedURLException e) {
                 performanceLog.set(index, displayUrl() + "failed");
@@ -62,7 +65,10 @@ public class URLAnalyzeInsertTask implements Runnable {
     }
 
     static ArrayList<String> getPerformanceLog() {
-        return new ArrayList<>(performanceLog);
+        if (performanceLog != null)
+            return new ArrayList<>(performanceLog);
+        else
+            return new ArrayList<>();
     }
 
     // displayUrl() shortens long urls for readability
