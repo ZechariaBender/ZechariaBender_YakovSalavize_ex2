@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -19,7 +18,7 @@ public class Crawl {
             String filename = args[3];
             // get instance of ImageURLChecker from urlCheckerFactory
             URLChecker urlChecker = urlCheckerFactory.getChecker("image");
-            DatabaseManager dbm = new DatabaseManager("jdbc:mysql://localhost:3306/ex2?user=root&password=&serverTimezone=UTC");
+            DatabaseManager dbm = new DatabaseManager();
             try {
                 BufferedReader urlReader = new BufferedReader(new FileReader(filename));
                 String url;
@@ -46,8 +45,7 @@ public class Crawl {
             }
         }
         else {
-            System.out.println("\n" +
-                    "==========================================\n" +
+            System.out.println("--------------------------------------------------------------------\n" +
                     "\n" +
                     "    Crawl\n" +
                     "\n" +
@@ -55,35 +53,21 @@ public class Crawl {
                     "    Zecharia bender ID: 320826118\n" +
                     "    Yakov Salavize ID: 203810239\n" +
                     "\n" +
-                    "    Date: April 15 2019\n" +
+                    "    Date: May 1 2019\n" +
                     "\n" +
-                    "==========================================\n" +
+                    "--------------------------------------------------------------------\n" +
+                    "    \n" +
+                    "    This program is a simple web crawler that scans URLs of images,\n" +
+                    "    records thread performance, and stores them in a database\n" +
+                    "    (only the URL, not the image itself).\n" +
                     "\n" +
-                    "    This program receives 4 mandatory arguments:\n" +
+                    "    Crawl receives 4 mandatory arguments:\n" +
                     "        1. first a pool size (positive non zero number, see below),\n" +
                     "        2. second a delay for retries (positive non zero milliseconds),\n" +
                     "        3. third a number of retries,\n" +
                     "        4. fourth a file name.\n" +
                     "\n" +
-                    "    The program is a simple web crawler that scans URLs of images,\n" +
-                    "    records thread performance, and stores them in a database\n" +
-                    "    (only the URL, not the image itself).\n" +
-                    "      * The first argument defines the pool size for concurrency purposes.\n" +
-                    "        In case the program fails to connect to a properly formed URL,\n" +
-                    "        the program tries to connect again.\n" +
-                    "      * The second argument specifies the delay until next attempt at\n" +
-                    "        connecting.\n" +
-                    "      * The third argument specifies the maximum number of such attempts.\n" +
-                    "      * The fourth argument should be the path to a text file containing\n" +
-                    "        a list of URLs to check and insert.\n" +
-                    "    The program uses a class called ImageURLChecker which implements\n" +
-                    "    the URLChecker interface to verify that the content type of\n" +
-                    "    a given URL is an image.\n" +
-                    "    A programmer can arbitrarily add alternative URLCheckers with\n" +
-                    "    other content types.\n" +
-                    "    The current available implementations of URLChecker are:");
-            // print documentation for all available URLChecker implementations
-            urlCheckerFactory.printAll();
+                    "--------------------------------------------------------------------");
         }
     }
 }

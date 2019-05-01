@@ -1,6 +1,6 @@
 
 
-==========================================
+--------------------------------------------------------------------
 
     Crawl
 
@@ -8,33 +8,133 @@
     Zecharia bender ID: 320826118
     Yakov Salavize ID: 203810239
 
-    Date: April 15 2019
+    Date: May 1 2019
 
-==========================================
+--------------------------------------------------------------------
 
-    This program receives 4 mandatory arguments:
+    This program is a simple web crawler that scans URLs of images,
+    records thread performance, and stores them in a database
+    (only the URL, not the image itself).
+
+    Crawl receives 4 mandatory arguments:
         1. first a pool size (positive non zero number, see below),
         2. second a delay for retries (positive non zero milliseconds),
         3. third a number of retries,
         4. fourth a file name.
 
-    The program is a simple web crawler that scans URLs of images,
-    records thread performance, and stores them in a database
-    (only the URL, not the image itself).
-      * The first argument defines the pool size for concurrency purposes.
-        In case the program fails to connect to a properly formed URL,
-        the program tries to connect again.
-      * The second argument specifies the delay until next attempt at
-        connecting.
-      * The third argument specifies the maximum number of such attempts.
-      * The fourth argument should be the path to a text file containing
-        a list of URLs to check and insert.
-    The program uses a class called ImageURLChecker which implements
-    the URLChecker interface to verify that the content type of
-    a given URL is an image.
-    A programmer can arbitrarily add alternative URLCheckers with
-    other content types.
-    The current available implementations of URLChecker are:
-    [run program without arguments to see list]
+--------------------------------------------------------------------
+    API DOCUMENTATION:
+--------------------------------------------------------------------
 
+    The main class of the program is:
+
+        public class Crawl
+
+
+    The program has one interface:
+
+        public interface URLChecker
+
+
+    The program has the additional following classes:
+
+        class DatabaseManager
+
+        public class ImageURLChecker implements URLChecker
+
+        public class URLAnalyzeInsertTask implements Runnable
+
+        class URLCheckerFactory
+
+--------------------------------------------------------------------
+    public class Crawl
+
+        Crawl receives four parameters:
+          * The first argument defines the pool size for concurrency purposes.
+            In case the program fails to connect to a properly formed URL,
+            the program tries to connect again.
+          * The second argument specifies the delay until next attempt at
+            connecting.
+          * The third argument specifies the maximum number of such attempts.
+          * The fourth argument should be the path to a text file containing
+            a list of URLs to check and insert.
+--------------------------------------------------------------------
+    public interface URLChecker:
+
+        This interface has one mandatory method:
+            boolean accept(String url) throws IOException;
+        The accept method checks if a url fits a certain criteria
+        or not.
+
+--------------------------------------------------------------------
+    class DatabaseManager
+
+        DatabaseManager is a package-private class which manages
+        the database.
+
+        Public or Package-private Methods:
+            void initDB()
+            void closeDB() {
+            void insert(String url) {
+            void printDB()
+
+        All methods are self-explanatory
+--------------------------------------------------------------------
+    public class ImageURLChecker implements URLChecker:
+
+        ImageURLChecker implements the URLChecker interface to
+        verify that the content type of a given URL is an image.
+        As stated above, a programmer can arbitrarily add alternative
+        URLCheckers with other content types.
+
+        Public or Package-private Methods:
+            Overridden Method:
+                public boolean accept(String url) throws IOException
+                (checks if content type of URL is image)
+
+            Additional method:
+                static String getKeyword() (method used by URLCheckerFactory)
+--------------------------------------------------------------------
+   public class URLAnalyzeInsertTask implements Runnable
+
+        URLAnalyzeInsertTask is a task which implements the
+        Runnable interface. This task works with an individual URL.
+        First it checks it with ImageURLChecker.accept(url), and
+        if the returned value is true, inserts it into the database
+        by calling DatabaseManager.insert(url).
+        The task records its own performance in a static array.
+        After all threads are finished, the main class gets this
+        array using getPerformanceLog() and outputs it.
+        This array records the tasks in the order of their dispatch
+        by use of indexing.
+
+        Public or Package-private Methods:
+            Constructor:
+                URLAnalyzeInsertTask(String url, URLChecker urlChecker,
+                    int delay, int attempts, DatabaseManager dbm)
+            Overridden Method:
+                public void run()
+            Additional Method:
+                static ArrayList<String> getPerformanceLog()
+
+        In the run() method there is a critical section accessed by
+        multiple threads concurrently: the DatabaseManager, for the
+        purpose of inserting a URL.
+
+        Java provides a way of creating threads and synchronizing
+        their task by using synchronized blocks. Synchronized blocks
+        in Java are marked with the synchronized keyword. A synchronized
+        block in Java is synchronized on some object. All synchronized
+        blocks synchronized on the same object can only have one thread
+        executing inside them at a time. All other threads attempting to
+        enter the synchronized block are blocked until the thread inside
+        the synchronized block exits the block.
+
+        We used the synchronized keyword in order to solve the problem.
+
+--------------------------------------------------------------------
+        class URLCheckerFactory:
+
+            Factory for URLChecker (duh)
+--------------------------------------------------------------------
 
