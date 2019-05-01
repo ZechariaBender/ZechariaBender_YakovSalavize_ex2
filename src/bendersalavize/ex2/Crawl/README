@@ -11,3 +11,30 @@
     Date: April 15 2019
 
 ==========================================
+
+    This program receives 4 mandatory arguments:
+        1. first a pool size (positive non zero number, see below),
+        2. second a delay for retries (positive non zero milliseconds),
+        3. third a number of retries,
+        4. fourth a file name.
+
+    The program is a simple web crawler that scans URLs of images,
+    records thread performance, and stores them in a database
+    (only the URL, not the image itself).
+      * The first argument defines the pool size for concurrency purposes.
+        In case the program fails to connect to a properly formed URL,
+        the program tries to connect again.
+      * The second argument specifies the delay until next attempt at
+        connecting.
+      * The third argument specifies the maximum number of such attempts.
+      * The fourth argument should be the path to a text file containing
+        a list of URLs to check and insert.
+    The program uses a class called ImageURLChecker which implements
+    the URLChecker interface to verify that the content type of
+    a given URL is an image.
+    A programmer can arbitrarily add alternative URLCheckers with
+    other content types.
+    The current available implementations of URLChecker are:
+    [run program without arguments to see list]
+
+
