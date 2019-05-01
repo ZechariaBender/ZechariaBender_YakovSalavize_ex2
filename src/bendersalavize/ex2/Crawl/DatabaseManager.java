@@ -12,22 +12,18 @@ public class DatabaseManager {
         initDB();
     }
 
-    public boolean insert(String url) {
+    public void insert(String url) {
         try {
-            return statement.execute("insert url into images");
+                statement.execute("insert into images VALUES(default, default, url)");
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
     }
 
     public void initDB()
     {
         try {
-            // Load the Oracle driver
-            // Java can dymamically load classes - here we load the external library jdbc-sql-connector
-            // String odbcDriver = "sun.jdbc.odbc.JdbcOdbcDriver";
-            String odbcDriver = "com.mysql.jdbc.Driver";
+            String odbcDriver = "com.mysql.cj.jdbc.Driver";
             Class.forName(odbcDriver);
 
         }catch (Exception e) {
