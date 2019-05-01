@@ -1,10 +1,8 @@
 package bendersalavize.ex2.Crawl;
 
-import javax.net.ssl.SSLHandshakeException;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class URLAnalyzeInsertTask implements Runnable {
     private int index;
@@ -30,25 +28,28 @@ public class URLAnalyzeInsertTask implements Runnable {
     @Override
     public void run() {
         double startTime = System.nanoTime();
-        try {
-            int i;
-            for (i = 0; i < attempts; i++) {
-                try{
-                    if(urlChecker.accept(url)) {
-                        dbm.insert(url);
-                        performanceLog.set(index, displayUrl() + (System.nanoTime() - startTime) / 1000000 + " ms");
-                        break;
-                    }
-                } catch (SSLHandshakeException ignored) {}
-                Thread.sleep(delay);
+        int i;
+        for (i = 0; i < attempts; i++) {
+            try {
+                if (urlChecker.accept(url)) {
+//                        dbm.insert(url);
+                }
+            } catch (MalformedURLException e) {
+                performanceLog.set(index, displayUrl() + "failed");
+                break;
+            } catch (IOException e) {
+                try {
+                    Thread.sleep(delay);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+                continue;
             }
-            if (i == attempts){
-                performanceLog.set(index, displayUrl() + "timeout");
-            }
-        } catch (MalformedURLException e) {
-            performanceLog.set(index, displayUrl() + "failed");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            performanceLog.set(index, displayUrl() + (System.nanoTime() - startTime) / 1000000 + " ms");
+            break;
+        }
+        if (i == attempts) {
+            performanceLog.set(index, displayUrl() + "timeout");
         }
     }
 
